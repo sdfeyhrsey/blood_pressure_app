@@ -23,7 +23,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             line-height: 1.6;
         }
         .container {
@@ -37,15 +37,15 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 24px;
+            font-size: 20px;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         h2 {
-            font-size: 18px;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            font-size: 14px;
+            margin-top: 8px;
+            margin-bottom: 8px;
             padding-left: 8px;
             border-left: 4px solid var(--primary-color);
         }
@@ -76,7 +76,7 @@
             padding: 8px 12px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 12px;
         }
         .form-group input:focus, .form-group textarea:focus {
             outline: none;
@@ -86,11 +86,11 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 7px 20px;
+            padding: 7px 15px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: normal;
-            font-size: 14px;
+            font-size: 10px;
             transition: background 0.1s;
         }
         .btn:hover {
@@ -102,13 +102,13 @@
         .btn-secondary:hover {
             background-color: #2c3e50;
         }
-        .btn-danger {
+        .btn-delete {
             background-color: #bdc3c7;
             padding: 4px 13px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: normal;
         }
-        .btn-danger:hover {
+        .btn-delete:hover {
             background-color: #c0392b;
         }
         .actions-wrapper {
@@ -141,7 +141,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 16px;
+            font-size: 12px;
         }
         th, td {
             border-bottom: 1px solid var(--border-color);
@@ -204,7 +204,7 @@
     <div class="card">
         <h2>💾 データの管理 (CSV)</h2>
         <div class="actions-wrapper">
-            <button class="btn btn-secondary" id="exportBtn">CSV出力</button>
+            <button class="btn btn-secondary" id="exportBtn">CSV書込</button>
             <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">CSV読込</button>
             <input type="file" id="csvFile" accept=".csv">
         </div>
@@ -215,7 +215,7 @@
         <h2>📊 血圧・脈拍の推移グラフ</h2>
         <div class="nav-calendar">
             <button class="btn btn-secondary"  id="prevMonth">◀ 前の月</button>
-        <div id="currentMonthLabel" style="font-weight:bold; font-size:18px;">----年--月</div>
+            <div id="currentMonthLabel" style="font-weight:bold; font-size:14px;">----年--月</div>
             <button class="btn btn-secondary"  id="nextMonth">次の月 ▶</button>
         </div>
         <div class="chart-container">
@@ -407,7 +407,7 @@
                         borderColor: '#10b981',
                         backgroundColor: '#10b981',
                         tension: 0.1,
-                        borderDash: [5, 5],
+                        borderDash: [4, 4],
                         spanGaps: false, // 未入力の場合は線をつなげない
                         yAxisID: 'yPulse'
                     }
@@ -483,8 +483,8 @@
                     {
                         label: '最高血圧',
                         data: systolicData,
-                        borderColor: 'rgba(239, 68, 68, 0.7)',
-                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: '#ef4444',
+                        backgroundColor: '#ef4444',
                         borderWidth: 1.5,
                         pointRadius: 1,
                         tension: 0.05,
@@ -493,8 +493,8 @@
                     {
                         label: '最低血圧',
                         data: diastolicData,
-                        borderColor: 'rgba(59, 130, 246, 0.7)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: '#3b82f6',
+                        backgroundColor: '#3b82f6',
                         borderWidth: 1.5,
                         pointRadius: 1,
                         tension: 0.05,
@@ -503,12 +503,12 @@
                     {
                         label: '脈拍',
                         data: pulseData,
-                        borderColor: 'rgba(16, 185, 129, 0.6)',
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10b981',
+                        backgroundColor: '#10b981',
                         borderWidth: 1,
                         pointRadius: 0.5,
                         tension: 0.05,
-                        borderDash: [3, 3],
+                        borderDash: [1, 1],
                         spanGaps: false, // 未入力の場合は線をつなげない
                         yAxisID: 'yPulse'
                     }
@@ -558,7 +558,7 @@
                 <td>${record.diastolic}</td>
                 <td>${record.pulse}</td>
                 <td>${record.memo || ''}</td>
-                <td><button class="btn btn-danger" onclick="deleteRecord('${record.date}')">削除</button></td>
+                <td><button class="btn btn-delete" onclick="deleteRecord('${record.date}')">削除</button></td>
             `;
             historyTableBody.appendChild(tr);
         });
