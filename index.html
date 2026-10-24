@@ -4,166 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>血圧管理アプリ</title>
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- date-fns & Chart.js date adapter CDN for parsing and scales -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.1/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
-        :root {
-            --primary-color: #ef4444;
-            --primary-hover: #c0392b;
-            --bg-color: #f8fafc;
-            --card-color: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
-        }
         body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f7f9fa;
+            color: #333;
             margin: 0;
             padding: 10px;
-            line-height: 1.6;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         h1, h2 {
-            color: #0f172a;
-        }
-        h1 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 14px;
-            margin-top: 8px;
-            margin-bottom: 8px;
-            padding-left: 8px;
-            border-left: 4px solid var(--primary-color);
-        }
-        .card {
-            background: var(--card-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
         }
         .form-group {
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            align-items: center;
         }
-        .form-group label {
-            font-size: 13px;
+        label {
             font-weight: bold;
-            margin-bottom: 5px;
-            color: #475569;
         }
-        .form-group input, .form-group textarea {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 12px;
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        .btn {
-            background-color: var(--primary-color);
+        button {
+            background-color: #3498db;
             color: white;
             border: none;
             padding: 7px 15px;
             border-radius: 4px;
             cursor: pointer;
-            font-weight: normal;
             font-size: 10px;
-            transition: background 0.1s;
         }
-        .btn:hover {
-            background-color: var(--primary-hover);
+        button:hover {
+            background-color: #2980b9;
         }
         .btn-secondary {
-            background-color: #7f8c8d;
+            background-color: #95a5a6;
         }
         .btn-secondary:hover {
-            background-color: #2c3e50;
+            background-color: #7f8c8d;
         }
-        .btn-delete {
-            background-color: #bdc3c7;
-            padding: 4px 13px;
+        .btn-danger {
+            background-color: #e74c3c;
+            padding: 5px 10px;
             font-size: 10px;
-            font-weight: normal;
         }
-        .btn-delete:hover {
+        .btn-danger:hover {
             background-color: #c0392b;
         }
-        .actions-wrapper {
-            display: flex;
-            gap: 10px;
+        .btn-edit {
+            background-color: #f39c12;
+            padding: 5px 10px;
+            font-size: 10px;
+            margin-right: 5px;
         }
-        .nav-calendar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .nav-calendar span {
-            cursor: pointer;
-            user-select: none;
-            color: #3b82f6;
-        }
-        .nav-calendar span:hover {
-            text-decoration: underline;
-        }
-        .chart-container {
-            position: relative;
-            height: 350px;
-            width: 100%;
+        .btn-edit:hover {
+            background-color: #d35400;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 12px;
+            margin-top: 20px;
         }
         th, td {
-            border-bottom: 1px solid var(--border-color);
-            padding: 7px;
-            text-align: left;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
         }
         th {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        .flex-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .chart-container {
+            position: relative;
+            margin: 30px 0;
+            height: 300px;
         }
         .disclaimer {
-            font-size: 10px;
-            color: #94a3b8;
-            margin-top: 20px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #ddd;
             padding-top: 10px;
-        }
-        #csvFile {
-            display: none;
         }
     </style>
 </head>
@@ -172,564 +114,327 @@
 <div class="container">
     <h1>血圧管理アプリ</h1>
 
-    <!-- 新規記録 -->
-    <div class="card">
-        <h2>📝 新規記録</h2>
-        <form id="bpForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="bpDate">日付</label>
-                    <input type="date" id="bpDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="systolic">最高血圧 (mmHg)</label>
-                    <input type="number" id="systolic" min="0" max="300" required>
-                </div>
-                <div class="form-group">
-                    <label for="diastolic">最低血圧 (mmHg)</label>
-                    <input type="number" id="diastolic" min="0" max="300" required>
-                </div>
-                <div class="form-group">
-                    <label for="pulse">脈拍 (拍/分)</label>
-                    <input type="number" id="pulse" min="0" max="250" required>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label for="memo">メモ</label>
-                    <input type="text" id="memo" placeholder="体調など">
-                </div>
-            </div>
-            <button type="submit" class="btn">記録を追加</button>
-        </form>
+    <h2>📝 新規記録 / 編集</h2>
+    <form id="bpForm">
+        <input type="hidden" id="editIndex" value="">
+        <div class="form-group">
+            <label for="bpDate">日付</label>
+            <input type="date" id="bpDate" required>
+        </div>
+        <div class="form-group">
+            <label for="systolic">最高血圧 (mmHg)</label>
+            <input type="number" id="systolic" required min="0">
+        </div>
+        <div class="form-group">
+            <label for="diastolic">最低血圧 (mmHg)</label>
+            <input type="number" id="diastolic" required min="0">
+        </div>
+        <div class="form-group">
+            <label for="pulse">脈拍 (拍/分)</label>
+            <input type="number" id="pulse" required min="0">
+        </div>
+         <div class="form-group" style="grid-column: span 2;">
+            <label for="memo">メモ</label>
+            <input type="text" id="memo" placeholder="体調など">
+        </div>
+        <button type="submit" id="submitBtn">記録を追加</button>
+        <button type="button" id="cancelBtn" class="btn-secondary" style="display:none;">キャンセル</button>
+    </form>
+
+    <h2>💾 データの管理 (CSV)</h2>
+    <div class="flex-buttons">
+        <button id="exportCsv">CSV書込</button>
+        <button id="importCsv" onclick="document.getElementById('csvFileInput').click();">CSV読込</button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
     </div>
 
-    <!-- データの管理 (CSV) -->
-    <div class="card">
-        <h2>💾 データの管理 (CSV)</h2>
-        <div class="actions-wrapper">
-            <button class="btn btn-secondary" id="exportBtn">CSV書込</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('csvFile').click()">CSV読込</button>
-            <input type="file" id="csvFile" accept=".csv">
-        </div>
+    <h2>📊 血圧・脈拍の推移グラフ</h2>
+    <div class="flex-buttons" style="justify-content: space-between; align-items: center;">
+        <button id="prevMonth">◀ 前の月</button>
+        <span id="currentMonthLabel" style="font-weight: bold; font-size: 18px;">----年--月</span>
+        <button id="nextMonth">次の月 ▶</button>
+    </div>
+    <div class="chart-container">
+        <canvas id="monthlyChart"></canvas>
     </div>
 
-    <!-- 血圧・脈拍の推移グラフ (月ごと) -->
-    <div class="card">
-        <h2>📊 血圧・脈拍の推移グラフ</h2>
-        <div class="nav-calendar">
-            <button class="btn btn-secondary"  id="prevMonth">◀ 前の月</button>
-            <div id="currentMonthLabel" style="font-weight:bold; font-size:14px;">----年--月</div>
-            <button class="btn btn-secondary"  id="nextMonth">次の月 ▶</button>
-        </div>
-        <div class="chart-container">
-            <canvas id="monthlyChart"></canvas>
-        </div>
+    <h2>📊 1年間の推移グラフ</h2>
+    <p style="font-size: 14px; color: #666;">過去365日間の記録を表示します。未入力（データがない日）は線が繋がりません。</p>
+    <div class="chart-container">
+        <canvas id="yearlyChart"></canvas>
     </div>
 
-    <!-- 1年間の毎日推移グラフ -->
-    <div class="card">
-        <h2>📊 1年間の推移グラフ</h2>
-        <p style="font-size:12px; color:#64748b; margin-top:-5px; margin-bottom:15px;">過去365日間の記録を表示します。未入力（データがない日）は線が繋がりません。</p>
-        <div class="chart-container">
-            <canvas id="yearlyChart"></canvas>
-        </div>
-    </div>
+    <h2>📋 履歴一覧</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>最高</th>
+                <th>最低</th>
+                <th>脈拍</th>
+                <th>メモ</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="historyTableBody">
+            <!-- 履歴がここに挿入されます -->
+        </tbody>
+    </table>
 
-    <!-- 履歴一覧 -->
-    <div class="card">
-        <h2>📋 履歴一覧</h2>
-        <div class="overflow-x-auto max-h-125">
-            <table id="historyTable">
-                <thead>
-                    <tr>
-                        <th>日付</th>
-                        <th>最高</th>
-                        <th>最低</th>
-                        <th>脈拍</th>
-                        <th>メモ</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 動的挿入 -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <p class="disclaimer">
-        ※ 本アプリは蓄積データのプライバシーを担保するため、サーバー等への送信は行わずブラウザ内部（LocalStorage）でのみ保存します。<br>
-        This is for informational purposes only. For medical advice or diagnosis, consult a professional. AI responses may include mistakes.
+    <p style="margin-top: 20px; font-size: 13px; color: #7f8c8d;">
+        ※ 本アプリは蓄積データのプライバシーを担保するため、サーバー等への送信は行わずブラウザ内部（LocalStorage）でのみ保存します。
     </p>
+
+    <div class="disclaimer">
+        This is for informational purposes only. For medical advice or diagnosis, consult a professional. AI responses may include mistakes.
+    </div>
 </div>
 
 <script>
-    // 状態管理
-    let bpData = JSON.parse(localStorage.getItem('bp_records')) || [];
+    // State management
+    let bpRecords = JSON.parse(localStorage.getItem('bpRecords')) || [];
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); // 0-11
+    let monthlyChart = null;
+    let yearlyChart = null;
 
-    // DOM要素
+    // DOM Elements
     const bpForm = document.getElementById('bpForm');
+    const editIndexInput = document.getElementById('editIndex');
     const bpDateInput = document.getElementById('bpDate');
     const systolicInput = document.getElementById('systolic');
     const diastolicInput = document.getElementById('diastolic');
     const pulseInput = document.getElementById('pulse');
     const memoInput = document.getElementById('memo');
-    const historyTableBody = document.querySelector('#historyTable tbody');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const historyTableBody = document.getElementById('historyTableBody');
     const currentMonthLabel = document.getElementById('currentMonthLabel');
-    const prevMonthBtn = document.getElementById('prevMonth');
-    const nextMonthBtn = document.getElementById('nextMonth');
-    const exportBtn = document.getElementById('exportBtn');
-    const csvFileInput = document.getElementById('csvFile');
 
-    // 本日の日付をデフォルト設定
-    const todayStr = new Date().toISOString().split('T')[0];
-    bpDateInput.value = todayStr;
+    // Set default date to today
+    bpDateInput.value = new Date().toISOString().split('T')[0];
 
-    // --- 月ごとグラフの土日背景色付けカスタムプラグイン ---
-    const monthlyWeekendBackgroundPlugin = {
-        id: 'monthlyWeekendBackgroundPlugin',
-        beforeDraw(chart, args, options) {
-            const { ctx, chartArea: { top, bottom, left, right }, scales: { x } } = chart;
-            if (!x) return;
-
-            ctx.save();
-            // x軸の各ラベルに対応するピクセル位置と日付から曜日を判定
-            const ticks = x.ticks;
-            for (let i = 0; i < ticks.length; i++) {
-                const value = x.getPixelForTick(i);
-                const labelDateStr = chart.data.labels[i];
-                if (!labelDateStr) continue;
-
-                const date = new Date(labelDateStr);
-                const day = date.getDay(); // 0:日, 6:土
-
-                // 描画する横幅の計算 (隣の目盛りとの半分の位置、最初と最後は調整)
-                let width = 0;
-                if (ticks.length > 1) {
-                    if (i === 0) {
-                        width = x.getPixelForTick(1) - x.getPixelForTick(0);
-                    } else {
-                        width = x.getPixelForTick(i) - x.getPixelForTick(i - 1);
-                    }
-                } else {
-                    width = right - left;
-                }
-
-                const leftPos = value - width / 2;
-                const rightPos = value + width / 2;
-
-                // グラフ描画領域内に収めるガード
-                const renderLeft = Math.max(leftPos, left);
-                const renderRight = Math.min(rightPos, right);
-
-                if (renderLeft < renderRight) {
-                    if (day === 6) { // 土曜日
-                        ctx.fillStyle = 'rgba(219, 234, 254, 0.4)';
-                        ctx.fillRect(renderLeft, top, renderRight - renderLeft, bottom - top);
-                    } else if (day === 0) { // 日曜日
-                        ctx.fillStyle = 'rgba(254, 226, 226, 0.4)';
-                        ctx.fillRect(renderLeft, top, renderRight - renderLeft, bottom - top);
-                    }
-                }
-            }
-            ctx.restore();
-        }
-    };
-
-    // グラフオブジェクト保持
-    let monthlyChartInstance = null;
-    let yearlyChartInstance = null;
-
-    // データのソート関数 (日付降順/昇順用)
-    function sortRecords() {
-        bpData.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Functions
+    function saveToLocalStorage() {
+        localStorage.setItem('bpRecords', JSON.stringify(bpRecords));
     }
 
-    // カレンダーラベル更新
-    function updateMonthLabel() {
-        currentMonthLabel.textContent = `${currentYear}年${String(currentMonth + 1).padStart(2, '0')}月`;
+    function renderAll() {
+        renderTable();
+        updateCharts();
     }
 
-    // --- 月ごとグラフの描画処理 ---
-    function renderMonthlyChart() {
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const labels = [];
-        const systolicData = [];
-        const diastolicData = [];
-        const pulseData = [];
-
-        // 該当月の日付枠を生成 (データがあろうとなかろうとすべての日をx軸に並べる)
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            labels.push(dateStr);
-
-            // 当該日のデータを検索
-            const record = bpData.find(r => r.date === dateStr);
-            if (record) {
-                systolicData.push(record.systolic);
-                diastolicData.push(record.diastolic);
-                pulseData.push(record.pulse);
-            } else {
-                systolicData.push(null);
-                diastolicData.push(null);
-                pulseData.push(null);
-            }
-        }
-
-        if (monthlyChartInstance) {
-            monthlyChartInstance.destroy();
-        }
-
-        const ctx = document.getElementById('monthlyChart').getContext('2d');
-        monthlyChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: '最高血圧',
-                        data: systolicData,
-                        borderColor: '#ef4444',
-                        backgroundColor: '#ef4444',
-                        tension: 0.1,
-                        spanGaps: false // 未入力の場合は線をつなげない
-                    },
-                    {
-                        label: '最低血圧',
-                        data: diastolicData,
-                        borderColor: '#3b82f6',
-                        backgroundColor: '#3b82f6',
-                        tension: 0.1,
-                        spanGaps: false // 未入力の場合は線をつなげない
-                    },
-                    {
-                        label: '脈拍',
-                        data: pulseData,
-                        borderColor: '#10b981',
-                        backgroundColor: '#10b981',
-                        tension: 0.1,
-                        borderDash: [4, 4],
-                        spanGaps: false, // 未入力の場合は線をつなげない
-                        yAxisID: 'yPulse'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { maxTicksLimit: 31, autoSkip: true }
-                    },
-                    y: {
-                        title: { display: true, text: '血圧 (mmHg)' },
-                        min: 20,
-                        max: 160
-                    },
-                    yPulse: {
-                        position: 'right',
-                        title: { display: true, text: '脈拍 (拍/分)' },
-                        min: 40,
-                        max: 120,
-                        grid: { drawOnChartArea: false }
-                    }
-                },
-                plugins: {
-                    tooltip: { mode: 'index', intersect: false }
-                }
-            },
-            plugins: [monthlyWeekendBackgroundPlugin] // 月ごとグラフにのみ土日色付けプラグインを適用
-        });
-    }
-
-    // --- 過去365日の毎日推移グラフの描画処理 ---
-    function renderYearlyChart() {
-        const labels = [];
-        const systolicData = [];
-        const diastolicData = [];
-        const pulseData = [];
-
-        // 今日から遡って365日分の全日付枠を生成
-        const today = new Date();
-        for (let i = 364; i >= 0; i--) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
-            labels.push(dateStr);
-
-            const record = bpData.find(r => r.date === dateStr);
-            if (record) {
-                systolicData.push(record.systolic);
-                diastolicData.push(record.diastolic);
-                pulseData.push(record.pulse);
-            } else {
-                // 未入力データはnullを設定
-                systolicData.push(null);
-                diastolicData.push(null);
-                pulseData.push(null);
-            }
-        }
-
-        if (yearlyChartInstance) {
-            yearlyChartInstance.destroy();
-        }
-
-        const ctx = document.getElementById('yearlyChart').getContext('2d');
-        yearlyChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: '最高血圧',
-                        data: systolicData,
-                        borderColor: '#ef4444',
-                        backgroundColor: '#ef4444',
-                        borderWidth: 1.5,
-                        pointRadius: 1,
-                        tension: 0.05,
-                        spanGaps: false // 未入力の場合は線をつなげない
-                    },
-                    {
-                        label: '最低血圧',
-                        data: diastolicData,
-                        borderColor: '#3b82f6',
-                        backgroundColor: '#3b82f6',
-                        borderWidth: 1.5,
-                        pointRadius: 1,
-                        tension: 0.05,
-                        spanGaps: false // 未入力の場合は線をつなげない
-                    },
-                    {
-                        label: '脈拍',
-                        data: pulseData,
-                        borderColor: '#10b981',
-                        backgroundColor: '#10b981',
-                        borderWidth: 1,
-                        pointRadius: 0.5,
-                        tension: 0.05,
-                        borderDash: [1, 1],
-                        spanGaps: false, // 未入力の場合は線をつなげない
-                        yAxisID: 'yPulse'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { maxTicksLimit: 12, autoSkip: true }
-                    },
-                    y: {
-                        min: 20,
-                        max: 160,
-                        title: { display: true, text: '血圧 (mmHg)' }
-                    },
-                    yPulse: {
-                        position: 'right',
-                        min: 40,
-                        max: 120,
-                        title: { display: true, text: '脈拍 (拍/分)' },
-                        grid: { drawOnChartArea: false }
-                    }
-                },
-                plugins: {
-                    tooltip: { mode: 'index', intersect: false }
-                }
-            }
-            // 過去一年間のグラフには土日色付けプラグインは適用していません
-        });
-    }
-
-    // --- 履歴一覧テーブルの更新処理 ---
-    function renderHistoryTable() {
-        historyTableBody.innerHTML = '';
+    function renderTable() {
+        // Sort records by date descending for the history list
+        const sortedRecords = [...bpRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // 履歴一覧は直近が上にくるように逆順(日付降順)でループ表示
-        const displayList = [...bpData].sort((a,b) => new Date(b.date) - new Date(a.date));
+        historyTableBody.innerHTML = '';
+        sortedRecords.forEach((record) => {
+            // Find original index in bpRecords array
+            const originalIndex = bpRecords.findIndex(r => r === record);
 
-        displayList.forEach(record => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${record.date}</td>
                 <td>${record.systolic}</td>
                 <td>${record.diastolic}</td>
                 <td>${record.pulse}</td>
-                <td>${record.memo || ''}</td>
-                <td><button class="btn btn-delete" onclick="deleteRecord('${record.date}')">削除</button></td>
+                <td>${escapeHtml(record.memo || '')}</td>
+                <td>
+                    <button class="btn-edit" onclick="editRecord(${originalIndex})">修正</button>
+                    <button class="btn-danger" onclick="deleteRecord(${originalIndex})">削除</button>
+                </td>
             `;
             historyTableBody.appendChild(tr);
         });
     }
 
-    // データ保存とリフレッシュ
-    function saveData() {
-        sortRecords();
-        localStorage.setItem('bp_records', JSON.stringify(bpData));
-        renderMonthlyChart();
-        renderYearlyChart();
-        renderHistoryTable();
+    function escapeHtml(string) {
+        if (!string) return '';
+        return string.replace(/[&<>"']/g, function(match) {
+            const escape = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
+            return escape[match];
+        });
     }
 
-    // 新規記録の追加
-    bpForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const date = bpDateInput.value;
-        const systolic = parseInt(systolicInput.value);
-        const diastolic = parseInt(diastolicInput.value);
-        const pulse = parseInt(pulseInput.value);
-        const memo = memoInput.value.trim();
+    window.editRecord = function(index) {
+        const record = bpRecords[index];
+        editIndexInput.value = index;
+        bpDateInput.value = record.date;
+        systolicInput.value = record.systolic;
+        diastolicInput.value = record.diastolic;
+        pulseInput.value = record.pulse;
+        memoInput.value = record.memo || '';
+        
+        submitBtn.textContent = '変更を保存';
+        cancelBtn.style.display = 'inline-block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        if(!date || isNaN(systolic) || isNaN(diastolic) || isNaN(pulse)) return;
-
-        // 同一日のデータがある場合は上書き、なければ新規追加
-        const existingIdx = bpData.findIndex(r => r.date === date);
-        const newRecord = { date, systolic, diastolic, pulse, memo };
-
-        if (existingIdx >= 0) {
-            bpData[existingIdx] = newRecord;
-        } else {
-            bpData.push(newRecord);
+    window.deleteRecord = function(index) {
+        if (confirm('この記録を削除してもよろしいですか？')) {
+            bpRecords.splice(index, 1);
+            saveToLocalStorage();
+            resetForm();
+            renderAll();
         }
+    }
 
-        saveData();
-
-        // フォームを一部リセット
+    function resetForm() {
+        editIndexInput.value = '';
+        bpDateInput.value = new Date().toISOString().split('T')[0];
         systolicInput.value = '';
         diastolicInput.value = '';
         pulseInput.value = '';
         memoInput.value = '';
+        submitBtn.textContent = '記録を追加';
+        cancelBtn.style.display = 'none';
+    }
+
+    cancelBtn.addEventListener('click', resetForm);
+
+    bpForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const indexStr = editIndexInput.value;
+        const recordData = {
+            date: bpDateInput.value,
+            systolic: parseInt(systolicInput.value, 10),
+            diastolic: parseInt(diastolicInput.value, 10),
+            pulse: parseInt(pulseInput.value, 10),
+            memo: memoInput.value
+        };
+
+        if (indexStr !== '') {
+            // Update existing
+            bpRecords[parseInt(indexStr, 10)] = recordData;
+        } else {
+            // Add new
+            bpRecords.push(recordData);
+        }
+
+        saveToLocalStorage();
+        resetForm();
+        renderAll();
     });
 
-    // レコード削除
-    window.deleteRecord = function(date) {
-        if(confirm(`${date} の記録を削除しますか？`)) {
-            bpData = bpData.filter(r => r.date !== date);
-            saveData();
-        }
-    };
-
-    // カレンダーナビゲーション
-    prevMonthBtn.addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        updateMonthLabel();
-        renderMonthlyChart();
-    });
-
-    nextMonthBtn.addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        updateMonthLabel();
-        renderMonthlyChart();
-    });
-
-    // --- CSVエクスポート ---
-    exportBtn.addEventListener('click', () => {
-        if (bpData.length === 0) {
-            alert('出力するデータがありません。');
-            return;
-        }
-        let csvContent = '日付,最高血圧,最低血圧,脈拍,メモ\n';
-        bpData.forEach(r => {
-            const row = [r.date, r.systolic, r.diastolic, r.pulse, `"${(r.memo || '').replace(/"/g, '""')}"`].join(',');
-            csvContent += row + '\n';
+    // Chart logic placeholder helpers
+    function updateCharts() {
+        currentMonthLabel.textContent = `${currentYear}年${String(currentMonth + 1).padStart(2, '0')}月`;
+        
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+        
+        // Filter records for current month
+        const monthlyData = bpRecords.filter(r => {
+            const d = new Date(r.date);
+            return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
         });
 
-        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `blood_pressure_data_${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        const sysData = new Array(daysInMonth).fill(null);
+        const diaData = new Array(daysInMonth).fill(null);
+        const pulseData = new Array(daysInMonth).fill(null);
+
+        monthlyData.forEach(r => {
+            const day = new Date(r.date).getDate();
+            sysData[day - 1] = r.systolic;
+            diaData[day - 1] = r.diastolic;
+            pulseData[day - 1] = r.pulse;
+        });
+
+        if (monthlyChart) monthlyChart.destroy();
+        const ctxMin = document.getElementById('monthlyChart').getContext('2d');
+        monthlyChart = new Chart(ctxMin, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: '最高血圧', data: sysData, borderColor: '#e74c3c', fill: false, spanGaps: false },
+                    { label: '最低血圧', data: diaData, borderColor: '#3498db', fill: false, spanGaps: false },
+                    { label: '脈拍', data: pulseData, borderColor: '#2ecc71', fill: false, spanGaps: false }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // Yearly chart (last 365 days)
+        if (yearlyChart) yearlyChart.destroy();
+        const sorted = [...bpRecords].sort((a,b) => new Date(a.date) - new Date(b.date));
+        const last365 = sorted.filter(r => {
+            const diffTime = Math.abs(new Date() - new Date(r.date));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays <= 365;
+        });
+
+        const ctxYear = document.getElementById('yearlyChart').getContext('2d');
+        yearlyChart = new Chart(ctxYear, {
+            type: 'line',
+            data: {
+                labels: last365.map(r => r.date),
+                datasets: [
+                    { label: '最高血圧', data: last365.map(r => r.systolic), borderColor: '#e74c3c', fill: false, spanGaps: false },
+                    { label: '最低血圧', data: last365.map(r => r.diastolic), borderColor: '#3498db', fill: false, spanGaps: false }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        updateCharts();
     });
 
-    // --- CSVインポート ---
-    csvFileInput.addEventListener('change', (e) => {
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        updateCharts();
+    });
+
+    // CSV Import / Export
+    document.getElementById('exportCsv').addEventListener('click', () => {
+        let csvContent = "data:text/csv;charset=utf-8,日付,最高血圧,最低血圧,脈拍,メモ\n";
+        bpRecords.forEach(r => {
+            csvContent += `${r.date},${r.systolic},${r.diastolic},${r.pulse},${r.memo || ''}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "blood_pressure_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    document.getElementById('csvFileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = function(evt) {
             const text = evt.target.result;
-            const lines = text.split(/\r?\n/);
-            if (lines.length <= 1) return;
-
-            // ヘッダーチェック（簡易）
-            const newRecords = [];
+            const lines = text.split('\n');
+            // Assuming first line is header
             for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-
-                // カンマ分割処理 (簡易ダブルクォーテーション対応)
-                const parts = [];
-                let current = '';
-                let inQuotes = false;
-                for (let j = 0; j < line.length; j++) {
-                    const char = line[j];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        parts.push(current);
-                        current = '';
-                    } else {
-                        current += char;
-                    }
-                }
-                parts.push(current);
-
-                if (parts.length >= 4) {
-                    const date = parts[0].trim();
-                    const systolic = parseInt(parts[1]);
-                    const diastolic = parseInt(parts[2]);
-                    const pulse = parseInt(parts[3]);
-                    const memo = parts[4] ? parts[4].trim() : '';
-
-                    // 日付フォーマットの簡易検証 (YYYY-MM-DD)
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(date) && !isNaN(systolic) && !isNaN(diastolic) && !isNaN(pulse)) {
-                        newRecords.push({ date, systolic, diastolic, pulse, memo });
-                    }
+                if (!lines[i]) continue;
+                const cols = lines[i].split(',');
+                if (cols.length >= 4) {
+                    bpRecords.push({
+                        date: cols[0],
+                        systolic: parseInt(cols[1], 10),
+                        diastolic: parseInt(cols[2], 10),
+                        pulse: parseInt(cols[3], 10),
+                        memo: cols[4] || ''
+                    });
                 }
             }
-
-            if (newRecords.length > 0) {
-                // インポートデータでマージ(重複はインポート側優先)
-                newRecords.forEach(nr => {
-                    const idx = bpData.findIndex(r => r.date === nr.date);
-                    if (idx >= 0) {
-                        bpData[idx] = nr;
-                    } else {
-                        bpData.push(nr);
-                    }
-                });
-                saveData();
-                alert(`${newRecords.length}件のデータを読み込み・更新しました。`);
-            } else {
-                alert('有効なデータが検出されませんでした。CSVフォーマットを確認してください。');
-            }
-            csvFileInput.value = ''; // リセット
+            saveToLocalStorage();
+            renderAll();
         };
         reader.readAsText(file);
     });
 
-    // 初期化起動
-    updateMonthLabel();
-    sortRecords();
-    renderMonthlyChart();
-    renderYearlyChart();
-    renderHistoryTable();
+    // Initial load
+    renderAll();
 </script>
-
 </body>
 </html>
