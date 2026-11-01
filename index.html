@@ -19,6 +19,7 @@
         h1 {
             text-align: center;
             color: #2c3e50;
+            font-size: 1.5em;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 10px;
         }
@@ -58,7 +59,7 @@
             font-size: 1.1em;
         }
         input[type="date"], input[type="number"], textarea {
-            padding: 8px 5px;
+            padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
@@ -140,7 +141,6 @@
     </style>
 </head>
 <body>
-
     <h1>血圧管理アプリ</h1>
 
     <!-- 📝 新規記録 / 編集フォーム -->
@@ -151,6 +151,8 @@
                 <label for="bp-date">日付</label>
                 <input type="date" id="bp-date" required>
             </div>
+        </div>
+        <div class="form-grid">
             <div class="form-group">
                 <label for="bp-systolic">最高血圧</label>
                 <input type="number"  id="bp-systolic" required>
@@ -163,11 +165,12 @@
                 <label for="bp-pulse">脈拍</label>
                 <input type="number" id="bp-pulse" required>
             </div>
-            <div class="form-group full-width">
-                <label for="bp-memo">メモ</label>
-                <textarea id="bp-memo" rows="2" placeholder="体調や気付いたことなど"></textarea>
-            </div>
         </div>
+        <div class="form-group full-width">
+            <label for="bp-memo">メモ</label>
+            <textarea id="bp-memo" rows="2" placeholder="体調や気付いたことなど"></textarea>
+        </div>
+
         <div class="form-actions">
             <button id="submit-btn" data-edit-index="-1">記録を追加</button>
             <button id="cancel-btn" style="display:none; background-color:#95a5a6; margin-left:10px;">キャンセル</button>
